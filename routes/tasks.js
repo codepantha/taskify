@@ -1,7 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getTasks } = require('../controllers/tasks');
+const {
+  index,
+  show,
+  create,
+  update,
+  destroy
+} = require('../controllers/tasks');
 
-router.route('/').get(getTasks);
+router.route('/').get(index).post(create);
+router.route('/:id').get(show).patch(update).delete(destroy);
 
 module.exports = router;
