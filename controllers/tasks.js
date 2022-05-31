@@ -32,8 +32,26 @@ const create = async (req, res) => {
   }
 };
 
-const update = (req, res) => {
-  res.send('Update task');
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, completed } = req.body;
+
+    const task = await Task.findByIdAndUpdate(
+      id,
+      { name, completed },
+      { returnDocument: 'after', runValidators: true }
+    );
+
+    if (!task)
+      return res
+        .status(404)
+        .json({ msg: 'Error! Cannot update non-existent task.' });
+
+    res.status(200).json({ task });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
 };
 
 const destroy = (req, res) => {
