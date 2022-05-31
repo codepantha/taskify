@@ -54,8 +54,18 @@ const update = async (req, res) => {
   }
 };
 
-const destroy = (req, res) => {
-  res.send('Delete task');
+const destroy = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.deleteOne({ _id: id });
+
+    if (!task)
+      return res.status(404).json({ msg: `Task with id: ${id} not found ` });
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
 };
 
 module.exports = { index, show, create, update, destroy };
