@@ -1,71 +1,51 @@
 const Task = require('../models/Task');
+const asyncWrapper = require('../middleware/async');
 
-const index = async (req, res) => {
-  try {
-    const tasks = await Task.find({});
-    res.status(200).json({ tasks });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
+const index = asyncWrapper(async (req, res) => {
+  const tasks = await Task.find({});
+  res.status(200).json({ tasks });
+});
 
-const show = async (req, res) => {
-  try {
-    const { id: taskId } = req.params;
-    const task = await Task.findById(taskId);
+const show = asyncWrapper(async (req, res) => {
+  const { id: taskId } = req.params;
+  const task = await Task.findById(taskId);
 
-    if (!task)
-      return res.status(404).json({ msg: `No task with id: ${taskId}` });
+  if (!task) return res.status(404).json({ msg: `No task with id: ${taskId}` });
 
-    res.status(200).json({ task });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
+  res.status(200).json({ task });
+});
 
-const create = async (req, res) => {
-  try {
-    const task = await Task.create(req.body);
-    res.status(201).json({ task });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
+const create = asyncWrapper(async (req, res) => {
+  const task = await Task.create(req.body);
+  res.status(201).json({ task });
+});
 
-const update = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, completed } = req.body;
+const update = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { name, completed } = req.body;
 
-    const task = await Task.findByIdAndUpdate(
-      id,
-      { name, completed },
-      { returnDocument: 'after', runValidators: true }
-    );
+  const task = await Task.findByIdAndUpdate(
+    id,
+    { name, completed },
+    { returnDocument: 'after', runValidators: true }
+  );
 
-    if (!task)
-      return res
-        .status(404)
-        .json({ msg: 'Error! Cannot update non-existent task.' });
+  if (!task)
+    return res
+      .status(404)
+      .json({ msg: 'Error! Cannot update non-existent task.' });
 
-    res.status(200).json({ task });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
+  res.status(200).json({ task });
+});
 
-const destroy = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const task = await Task.deleteOne({ _id: id });
+const destroy = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const task = await Task.deleteOne({ _id: id });
 
-    if (!task)
-      return res.status(404).json({ msg: `Task with id: ${id} not found ` });
+  if (!task)
+    return res.status(404).json({ msg: `Task with id: ${id} not found ` });
 
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
+  res.status(204).send();
+});
 
 module.exports = { index, show, create, update, destroy };
