@@ -6,12 +6,15 @@ const index = asyncWrapper(async (req, res) => {
   res.status(200).json({ tasks });
 });
 
-const show = asyncWrapper(async (req, res) => {
+const show = asyncWrapper(async (req, res, next) => {
   const { id: taskId } = req.params;
   const task = await Task.findById(taskId);
 
-  if (!task) return res.status(404).json({ msg: `No task with id: ${taskId}` });
-
+  if (!task) {
+    const error = new Error(`Task not found`)
+    error.status = 404;
+    return next(error)
+  }
   res.status(200).json({ task });
 });
 
