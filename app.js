@@ -3,6 +3,7 @@ const app = express();
 const taskRoutes = require('./routes/tasks');
 const connectToDB = require('./db/connect');
 require('dotenv').config();
+const notFound = require('./middleware/notFound');
 
 // middleware
 app.use(express.urlencoded({ extended: false }))
@@ -10,9 +11,7 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1/tasks', taskRoutes);
-app.get('/hello', (req, res) => {
-  res.send('Hello')
-})
+app.use(notFound);
 
 const start = async () => {
   try {
